@@ -1,0 +1,6 @@
+# ===========================================
+# Custom Command Definitions
+# ===========================================
+# Users can extend the command set by defining additional actions here.
+
+commands: {}

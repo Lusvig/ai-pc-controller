@@ -1,0 +1,9 @@
+# ===========================================
+# Hotkey Definitions
+# ===========================================
+
+hotkeys:
+  toggle_listening: "ctrl+shift+space"
+  emergency_stop: "ctrl+shift+escape"
+  show_window: "ctrl+shift+a"
+  take_screenshot: "ctrl+shift+s"

@@ -1,0 +1,249 @@
+# ===========================================
+# AI PC Controller - Default Configuration
+# ===========================================
+
+# Application Information
+app:
+  name: "AI PC Controller"
+  version: "1.0.0"
+  author: "Your Name"
+  
+# AI Configuration
+ai:
+  # Provider: ollama (free/local), gemini (free tier), groq (free tier)
+  provider: "ollama"
+  
+  # Ollama settings
+  ollama:
+    host: "http://localhost:11434"
+    model: "llama3.2:3b"
+    timeout: 60
+    context_length: 4096
+    
+  # Gemini settings
+  gemini:
+    model: "gemini-1.5-flash"
+    temperature: 0.7
+    max_tokens: 2048
+    
+  # Groq settings
+  groq:
+    model: "llama-3.1-70b-versatile"
+    temperature: 0.7
+    max_tokens: 2048
+    
+  # Response parsing
+  parsing:
+    max_retries: 3
+    retry_delay: 1.0
+    
+# Voice Configuration
+voice:
+  enabled: true
+  
+  # Speech Recognition
+  recognition:
+    engine: "google"  # google, sphinx, whisper
+    language: "en-US"
+    timeout: 5
+    phrase_timeout: 3
+    energy_threshold: 300
+    dynamic_energy: true
+    
+  # Text-to-Speech
+  tts:
+    engine: "pyttsx3"  # pyttsx3, edge-tts
+    voice: null  # null for default
+    rate: 175
+    volume: 1.0
+    
+  # Wake Word
+  wake_word:
+    enabled: false
+    phrase: "hey computer"
+    sensitivity: 0.5
+    
+# GUI Configuration
+gui:
+  theme: "dark"  # dark, light, system
+  
+  window:
+    width: 900
+    height: 700
+    min_width: 600
+    min_height: 400
+    start_maximized: false
+    start_minimized: false
+    always_on_top: false
+    
+  system_tray:
+    enabled: true
+    minimize_to_tray: true
+    start_in_tray: false
+    
+  chat:
+    font_family: "Segoe UI"
+    font_size: 12
+    max_history: 1000
+    show_timestamps: true
+    
+  colors:
+    dark:
+      background: "#1a1a2e"
+      secondary: "#16213e"
+      accent: "#0f3460"
+      text: "#e8e8e8"
+      user_message: "#4a90d9"
+      ai_message: "#2ecc71"
+      error: "#e74c3c"
+      warning: "#f39c12"
+      
+    light:
+      background: "#ffffff"
+      secondary: "#f5f5f5"
+      accent: "#e0e0e0"
+      text: "#333333"
+      user_message: "#1976d2"
+      ai_message: "#388e3c"
+      error: "#d32f2f"
+      warning: "#f57c00"
+
+# Controller Configuration
+controllers:
+  # Application Controller
+  applications:
+    search_paths:
+      - "C:\\Program Files"
+      - "C:\\Program Files (x86)"
+      - "%LOCALAPPDATA%\\Programs"
+      - "%APPDATA%\\Microsoft\\Windows\\Start Menu\\Programs"
+    cache_enabled: true
+    cache_ttl: 3600  # seconds
+    
+  # File Controller
+  files:
+    default_location: "%USERPROFILE%\\Documents"
+    trash_enabled: true
+    max_search_results: 100
+    search_timeout: 30
+    
+  # System Controller
+  system:
+    allow_shutdown: true
+    allow_restart: true
+    shutdown_delay: 10  # seconds for countdown
+    
+  # Audio Controller
+  audio:
+    default_device: null  # null for system default
+    volume_step: 5  # percentage
+    
+  # Display Controller
+  display:
+    brightness_step: 10  # percentage
+    
+  # Input Controller
+  input:
+    typing_speed: 0.02  # seconds between characters
+    mouse_movement_duration: 0.5
+    
+  # Web Controller  
+  web:
+    default_browser: null  # null for system default
+    search_engine: "google"  # google, bing, duckduckgo
+    
+# Safety Configuration
+safety:
+  enabled: true
+  
+  # Commands requiring confirmation
+  confirm_commands:
+    - "shutdown"
+    - "restart"
+    - "sleep"
+    - "hibernate"
+    - "lock"
+    - "delete"
+    - "format"
+    - "empty_recycle_bin"
+    
+  # Blocked commands (never execute)
+  blocked_commands: []
+  
+  # Rate limiting
+  rate_limit:
+    enabled: true
+    max_commands_per_minute: 30
+    
+  # Command logging
+  logging:
+    enabled: true
+    include_responses: true
+    max_log_size_mb: 100
+    
+# Hotkeys Configuration
+hotkeys:
+  global:
+    toggle_listening: "ctrl+shift+space"
+    emergency_stop: "ctrl+shift+escape"
+    show_window: "ctrl+shift+a"
+    take_screenshot: "ctrl+shift+s"
+    
+  window:
+    send_command: "Return"
+    clear_input: "Escape"
+    voice_input: "ctrl+m"
+    settings: "ctrl+comma"
+    
+# Automation Configuration
+automation:
+  macros:
+    enabled: true
+    storage_path: "data/macros"
+    max_recording_time: 300  # seconds
+    
+  scheduled_tasks:
+    enabled: true
+    storage_path: "data/schedules"
+    
+  workflows:
+    enabled: true
+    storage_path: "data/workflows"
+    
+# Plugin Configuration
+plugins:
+  enabled: true
+  directory: "plugins"
+  auto_load: true
+  
+  # Built-in plugins
+  builtin:
+    spotify: true
+    discord: false
+    obs: false
+    
+# Database Configuration
+database:
+  path: "data/history.db"
+  backup_enabled: true
+  backup_interval: 86400  # daily in seconds
+  max_backups: 7
+  
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: "logs/app.log"
+  max_size_mb: 50
+  backup_count: 5
+  console_output: true
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}"
+  
+# Update Configuration
+updates:
+  check_enabled: true
+  check_interval: 86400  # daily
+  auto_download: false
+  
+# Telemetry (anonymous usage data)
+telemetry:
+  enabled: false
