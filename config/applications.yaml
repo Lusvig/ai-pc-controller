@@ -1,0 +1,160 @@
+# ===========================================
+# Application Definitions
+# ===========================================
+# Define common applications and their paths/commands
+
+applications:
+  # Browsers
+  chrome:
+    names: ["chrome", "google chrome", "google"]
+    paths:
+      - "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+      - "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
+      - "%LOCALAPPDATA%\\Google\\Chrome\\Application\\chrome.exe"
+    process_name: "chrome.exe"
+    
+  firefox:
+    names: ["firefox", "mozilla", "mozilla firefox"]
+    paths:
+      - "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+      - "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe"
+    process_name: "firefox.exe"
+    
+  edge:
+    names: ["edge", "microsoft edge"]
+    paths:
+      - "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+    process_name: "msedge.exe"
+    
+  brave:
+    names: ["brave", "brave browser"]
+    paths:
+      - "%LOCALAPPDATA%\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
+    process_name: "brave.exe"
+
+  # Development
+  vscode:
+    names: ["vscode", "vs code", "visual studio code", "code"]
+    paths:
+      - "%LOCALAPPDATA%\\Programs\\Microsoft VS Code\\Code.exe"
+      - "C:\\Program Files\\Microsoft VS Code\\Code.exe"
+    process_name: "Code.exe"
+    
+  notepad:
+    names: ["notepad", "text editor"]
+    paths:
+      - "notepad.exe"
+    process_name: "notepad.exe"
+    
+  notepadpp:
+    names: ["notepad++", "notepad plus plus", "npp"]
+    paths:
+      - "C:\\Program Files\\Notepad++\\notepad++.exe"
+      - "C:\\Program Files (x86)\\Notepad++\\notepad++.exe"
+    process_name: "notepad++.exe"
+
+  # Communication
+  discord:
+    names: ["discord"]
+    paths:
+      - "%LOCALAPPDATA%\\Discord\\Update.exe --processStart Discord.exe"
+    process_name: "Discord.exe"
+    
+  slack:
+    names: ["slack"]
+    paths:
+      - "%LOCALAPPDATA%\\slack\\slack.exe"
+    process_name: "slack.exe"
+    
+  teams:
+    names: ["teams", "microsoft teams"]
+    paths:
+      - "%LOCALAPPDATA%\\Microsoft\\Teams\\Update.exe --processStart Teams.exe"
+    process_name: "Teams.exe"
+
+  # Media
+  spotify:
+    names: ["spotify"]
+    paths:
+      - "%APPDATA%\\Spotify\\Spotify.exe"
+    process_name: "Spotify.exe"
+    
+  vlc:
+    names: ["vlc", "vlc player", "vlc media player"]
+    paths:
+      - "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe"
+      - "C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe"
+    process_name: "vlc.exe"
+
+  # Utilities
+  calculator:
+    names: ["calculator", "calc"]
+    paths:
+      - "calc.exe"
+    process_name: "Calculator.exe"
+    
+  snipping_tool:
+    names: ["snipping tool", "snip", "screenshot tool"]
+    paths:
+      - "snippingtool.exe"
+      - "ms-screenclip:"
+    process_name: "SnippingTool.exe"
+    
+  file_explorer:
+    names: ["file explorer", "explorer", "files", "my computer", "this pc"]
+    paths:
+      - "explorer.exe"
+    process_name: "explorer.exe"
+    
+  task_manager:
+    names: ["task manager", "taskmgr"]
+    paths:
+      - "taskmgr.exe"
+    process_name: "Taskmgr.exe"
+    
+  control_panel:
+    names: ["control panel", "settings", "system settings"]
+    paths:
+      - "control.exe"
+    process_name: "control.exe"
+    
+  cmd:
+    names: ["command prompt", "cmd", "terminal", "command line"]
+    paths:
+      - "cmd.exe"
+    process_name: "cmd.exe"
+    
+  powershell:
+    names: ["powershell", "ps"]
+    paths:
+      - "powershell.exe"
+    process_name: "powershell.exe"
+
+  # Gaming
+  steam:
+    names: ["steam"]
+    paths:
+      - "C:\\Program Files (x86)\\Steam\\steam.exe"
+    process_name: "steam.exe"
+
+  # Office
+  word:
+    names: ["word", "microsoft word", "ms word"]
+    paths:
+      - "C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE"
+      - "C:\\Program Files (x86)\\Microsoft Office\\root\\Office16\\WINWORD.EXE"
+    process_name: "WINWORD.EXE"
+    
+  excel:
+    names: ["excel", "microsoft excel", "ms excel"]
+    paths:
+      - "C:\\Program Files\\Microsoft Office\\root\\Office16\\EXCEL.EXE"
+      - "C:\\Program Files (x86)\\Microsoft Office\\root\\Office16\\EXCEL.EXE"
+    process_name: "EXCEL.EXE"
+    
+  powerpoint:
+    names: ["powerpoint", "microsoft powerpoint", "ppt"]
+    paths:
+      - "C:\\Program Files\\Microsoft Office\\root\\Office16\\POWERPNT.EXE"
+      - "C:\\Program Files (x86)\\Microsoft Office\\root\\Office16\\POWERPNT.EXE"
+    process_name: "POWERPNT.EXE"

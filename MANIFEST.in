@@ -1,0 +1,7 @@
+include README.md
+include LICENSE
+include VERSION
+include CHANGELOG.md
+recursive-include config *.yaml
+recursive-include assets *
+recursive-include docs *.md
