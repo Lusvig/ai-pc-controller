@@ -105,18 +105,56 @@ class MainWindow:
 
     def on_user_message(self, text: str) -> None:
         self.append("user", text)
-        parsed = self.engine.safe_process(text)
 
-        if parsed.action == "chat":
-            self.append("ai", parsed.message or parsed.raw_text)
+        result = self.engine.process_command(text)
+
+        action = result.get("action", "")
+        message = result.get("message", "")
+        executed = result.get("executed", False)
+        success = result.get("success", False)
+        exec_result = result.get("result")
+
+        # Format the display message based on execution status
+        if action == "chat":
+            display_text = message or text
+            self.append("ai", display_text)
             if not self.engine.is_ready:
                 self.append("system", "Tip: Click 'Retry AI' if the AI connection failed.")
-            return
+        elif executed and success:
+            # Show success with checkmark
+            if action == "open_application":
+                app_name = result.get("params", {}).get("name", "application")
+                display_text = f"✓ Opened {app_name}"
+            elif action == "close_application":
+                app_name = result.get("params", {}).get("name", "application")
+                display_text = f"✓ Closed {app_name}"
+            elif action == "screenshot" and exec_result:
+                saved_path = exec_result.get("data", {}).get("saved", "") if exec_result else ""
+                display_text = f"✓ Screenshot saved"
+                if saved_path:
+                    display_text = f"✓ Screenshot saved: {saved_path}"
+            elif action == "web_search":
+                display_text = f"✓ Searching Google"
+            elif action == "open_url":
+                url = result.get("params", {}).get("url", "")
+                display_text = f"✓ Opened website"
+            elif action == "system":
+                display_text = f"✓ {message}"
+            elif action == "get_system_info":
+                display_text = f"✓ System info retrieved"
+            else:
+                display_text = f"✓ {message}"
 
-        result = self.controllers.execute(parsed.action, parsed.params)
-        if parsed.message:
-            self.append("ai", parsed.message)
-        self.append("system", result.message)
+            self.append("ai", display_text)
+        elif executed and not success:
+            # Show failure with X
+            error_msg = exec_result.get("message", "Unknown error") if exec_result else "Unknown error"
+            display_text = f"✗ Failed: {error_msg}"
+            self.append("ai", display_text)
+        else:
+            # Generic handling
+            if message:
+                self.append("ai", message)
 
     def open_settings(self) -> None:
         SettingsWindow(self.app)

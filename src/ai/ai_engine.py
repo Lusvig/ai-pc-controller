@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional, Tuple
 
-from src.ai.prompts.system_prompts import SYSTEM_PROMPT
+from src.ai.prompts.system_prompts import get_system_prompt
 from src.ai.response_parser import ParsedResponse, ResponseParser
 from src.ai.providers.base_provider import BaseAIProvider
 from src.ai.providers.gemini_provider import GeminiProvider
@@ -212,7 +212,7 @@ class AIEngine:
                 raise AIConnectionError(self.provider_name, message=msg)
 
         assert self.provider is not None
-        return self.provider.generate(user_input, system_prompt=SYSTEM_PROMPT)
+        return self.provider.generate(user_input, system_prompt=get_system_prompt())
 
     def process(self, user_input: str) -> ParsedResponse:
         raw = self.generate_raw(user_input)
@@ -265,6 +265,85 @@ class AIEngine:
             return self.process(user_input)
         except AIProviderError as e:
             return ParsedResponse(action="chat", params={}, message=self._format_provider_error(e), raw_text=str(e))
+
+    def process_command(self, user_input: str) -> Dict[str, Any]:
+        """
+        Process a user command: AI generates response, we execute it.
+
+        Args:
+            user_input: Natural language command from user
+
+        Returns:
+            Dictionary with execution results including:
+            - success: bool
+            - action: str
+            - params: dict
+            - message: str
+            - executed: bool
+            - result: dict (execution result from controller)
+        """
+        from src.controllers.controller_manager import ControllerManager
+
+        if not self.is_ready:
+            ok, message = self.initialize()
+            if not ok:
+                return {
+                    "success": False,
+                    "action": "error",
+                    "params": {},
+                    "message": message,
+                    "executed": False,
+                    "result": None
+                }
+
+        try:
+            # Generate AI response
+            logger.debug(f"Sending to AI: {user_input}")
+            raw_response = self.generate_raw(user_input)
+            logger.debug(f"AI raw response: {raw_response}")
+
+            # Parse the response
+            parsed = self.process(raw_response)
+            logger.info(f"Parsed command: action={parsed.action}, params={parsed.params}")
+
+            # If it's just chat, return without execution
+            if parsed.action == "chat":
+                return {
+                    "success": True,
+                    "action": "chat",
+                    "params": {},
+                    "message": parsed.message or raw_response.strip(),
+                    "executed": False,
+                    "result": None
+                }
+
+            # Execute the command via controller manager
+            controller_manager = ControllerManager()
+            result = controller_manager.execute(parsed.action, parsed.params)
+
+            return {
+                "success": result.success,
+                "action": parsed.action,
+                "params": parsed.params,
+                "message": parsed.message or result.message,
+                "executed": True,
+                "result": {
+                    "success": result.success,
+                    "message": result.message,
+                    "data": result.data
+                }
+            }
+
+        except Exception as e:
+            logger.exception(f"Error processing command: {e}")
+            return {
+                "success": False,
+                "action": "error",
+                "params": {},
+                "message": str(e),
+                "executed": False,
+                "result": None
+            }
 
     def health_check(self) -> Dict[str, Any]:
         health: Dict[str, Any] = {
