@@ -1,14 +1,87 @@
-"""Main entry point for AI PC Controller.
+"""AI PC Controller - Main Entry Point
 
-This startup sequence:
-1) Checks for Ollama availability (if configured)
-2) Attempts to start Ollama if not running
-3) Verifies at least one model is available
-4) Initializes the AI engine
-5) Launches the GUI or CLI
+Handles startup, dependency checking, and initialization.
 """
 
-from __future__ import annotations
+import sys
+import os
+from pathlib import Path
+
+# Add src to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+
+def check_dependencies() -> dict:
+    """
+    Check which dependencies are available.
+    
+    Returns:
+        Dictionary with dependency status
+    """
+    status = {
+        "core": True,
+        "voice": True,
+        "optional": {},
+        "warnings": []
+    }
+    
+    # Check core dependencies
+    core_packages = [
+        "customtkinter",
+        "requests",
+        "loguru",
+        "yaml",
+        "pydantic"
+    ]
+    
+    for package in core_packages:
+        try:
+            __import__(package)
+        except ImportError:
+            status["core"] = False
+            status["warnings"].append(f"Missing core package: {package}")
+    
+    # Check voice dependencies
+    try:
+        import speech_recognition
+        status["optional"]["speech_recognition"] = True
+    except ImportError:
+        status["optional"]["speech_recognition"] = False
+        status["warnings"].append("SpeechRecognition not installed - voice input disabled")
+    
+    try:
+        import pyttsx3
+        status["optional"]["pyttsx3"] = True
+    except ImportError:
+        status["optional"]["pyttsx3"] = False
+        status["warnings"].append("pyttsx3 not installed - voice output disabled")
+    
+    try:
+        import pyaudio
+        status["optional"]["pyaudio"] = True
+    except ImportError:
+        status["optional"]["pyaudio"] = False
+        # Not critical - speech_recognition can work with other backends
+    
+    # Check AI dependencies
+    try:
+        import ollama
+        status["optional"]["ollama"] = True
+    except ImportError:
+        status["optional"]["ollama"] = False
+        status["warnings"].append("Ollama package not installed")
+    
+    return status
+
+
+def print_startup_banner():
+    """Print startup banner."""
+    print()
+    print("=" * 60)
+    print("     AI PC CONTROLLER")
+    print("=" * 60)
+    print()
+
 
 from src.ai.ai_engine import AIEngine
 from src.controllers.controller_manager import ControllerManager
@@ -103,53 +176,70 @@ def run_cli() -> None:
 
 
 def main() -> None:
-    cfg = get_config_manager().config
+    """Main entry point."""
+    print_startup_banner()
+    
+    # Check dependencies
+    print("[1/4] Checking dependencies...")
+    dep_status = check_dependencies()
+    
+    if not dep_status["core"]:
+        print("\n[ERROR] Missing core dependencies!")
+        for warning in dep_status["warnings"]:
+            print(f"  - {warning}")
+        print("\nPlease run: pip install -r requirements.txt")
+        sys.exit(1)
+    
+    print("  [OK] Core dependencies available")
+    
+    # Print warnings for optional packages
+    if dep_status["warnings"]:
+        print("\n  [WARNINGS]")
+        for warning in dep_status["warnings"]:
+            print(f"    - {warning}")
+    print()
+    
+    # Continue with normal startup
+    print("[2/4] Loading configuration...")
+    from src.utils.logger import setup_logger
+    from src.utils.config_manager import get_config
+    
+    config = get_config()
     setup_logger(
-        log_level=cfg.logging.level,
-        log_file=cfg.logging.file,
-        max_size_mb=cfg.logging.max_size_mb,
-        backup_count=cfg.logging.backup_count,
-        console_output=cfg.logging.console_output,
+        log_level=config.logging.level,
+        log_file=config.logging.file,
+        console_output=True
     )
-
-    logger.info("Starting AI PC Controller")
-
-    # Pre-check Ollama readiness if it's the configured provider
-    ready, msg = check_ollama_readiness()
-    if ready:
-        print(f"  ✓ {msg}\n")
-        print("=" * 60)
-        print("   Starting Application")
-        print("=" * 60 + "\n")
+    print("  [OK] Configuration loaded")
+    print()
+    
+    print("[3/4] Initializing AI Engine...")
+    from src.ai.ai_engine import AIEngine
+    
+    engine = AIEngine()
+    success, message = engine.initialize()
+    
+    if success:
+        print(f"  [OK] {message}")
     else:
-        print("\n" + "!" * 60)
-        print("   AI SETUP INCOMPLETE")
-        print("!" * 60)
-        print(f"\nError: {msg}")
-        print("\nYou can still start the application, but AI features may not work.")
-        print("Press Enter to continue, or Ctrl+C to exit...\n")
-        try:
-            input()
-        except KeyboardInterrupt:
-            print("\nExiting.")
-            return
-
+        print(f"  [WARNING] {message}")
+        print("  The application will start but AI features may be limited.")
+    print()
+    
+    print("[4/4] Starting GUI...")
+    print()
+    
     try:
-        from src.gui.main_window import run_app
-
-        # Initialize engine once
-        engine = AIEngine(config=cfg)
-        ok, msg = engine.initialize()
-
-        if ok:
-            logger.info(f"AI initialized: {msg}")
-        else:
-            logger.warning(f"AI initialization failed: {msg}")
-
-        run_app(ai_engine=engine)
+        from src.gui.main_window import MainWindow
+        
+        app = MainWindow(ai_engine=engine)
+        app.run()
+        
     except Exception as e:
-        logger.warning(f"Failed to start GUI, falling back to CLI: {e}")
-        run_cli()
+        print(f"\n[ERROR] Failed to start: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
 
 
 if __name__ == "__main__":
